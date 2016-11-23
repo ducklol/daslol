@@ -77,14 +77,15 @@ static auctionator a = null;
                     int lastocc = Integer.parseInt(lastoccur[0]);
                     lastocc++;
                     newitemList.add(lastocc+ "," + auct.getOwnerName()+","+auct.getItemName()+","+auct.getValue());
-                    System.out.println("new item list" + newitemList.get(0));
+                    System.out.println("new item list " + newitemList.get(0));
                 }
         		 else
                  {
-        			 System.out.println("ITEMLIST" +itemList.size());
+        			 System.out.println("ITEMLIST " +itemList.size());
                      newitemList.add(1+","+auct.getOwnerName()+","+auct.getItemName()+","+auct.getValue());
                  }
-        	    	a.createClient(newitemList.get(0));
+        	    System.out.println("ITEMLIST2 " +itemList.size());
+        	    	a.createAuction(newitemList.get(0));
             	}
         	}
 

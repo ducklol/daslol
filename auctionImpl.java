@@ -106,13 +106,13 @@ public ArrayList<String> readList() throws IOException {
 		return itemList1;  
 }
 	
-public void createClient(String bid) throws IOException {
+public void createAuction(String auctItem) throws IOException {
 		  // TODO Auto-generated method stub
 	
     		  PrintWriter out = null;
     		  try {
     		      out = new PrintWriter(new BufferedWriter(new FileWriter("name.txt", true)));
-    		      out.println(bid + System.getProperty("line.separator"));
+    		      out.println(auctItem + System.getProperty("line.separator"));
     		  }catch (IOException e) {
     		      System.err.println(e);
     		  }finally{
@@ -120,7 +120,7 @@ public void createClient(String bid) throws IOException {
     		          out.close();
     		      }
     		 } 
-    		 System.out.println("Bid created");
+    		 System.out.println("Auction created");
 
     		 }
 }
