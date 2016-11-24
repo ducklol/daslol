@@ -104,6 +104,7 @@ public ArrayList<String> readList() throws IOException {
 		    itemList1.add(line);
 		//itemList.get(0); //test the array
 		}
+		itemList1.removeAll(Collections.singleton(""));
 		return itemList1;  
 }
 	

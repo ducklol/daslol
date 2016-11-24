@@ -20,6 +20,14 @@ public class auctionClient implements clientServant, Runnable{
 static Scanner scan = new Scanner(System.in);
 static clientServant cS = null;
 static auctionator a = null;
+
+static auctionItem auct = new auctionItem();			//auctionImpl.create();
+static ArrayList<String> auctionList = new ArrayList<String>();		//arraylist to store item
+//ArrayList<String> printitemList = new ArrayList<String>();	//list that gets printed out
+static String[] counter;							//counter that acts as id for items
+static String print;												//to print
+static String bidderName;
+
  public auctionClient() throws RemoteException {
       super();
    }
@@ -53,47 +61,39 @@ static auctionator a = null;
         		choice = scan.nextLine();
             }
         	if (choice.equals("1")){
-        		//auctionImpl.create();
-        		auctionItem auct = new auctionItem();
         		
-        		ArrayList<String> itemList = new ArrayList<String>();		//arraylist to store item
-        		//ArrayList<String> printitemList = new ArrayList<String>();	//list that gets printed out
-        		String[] counter;							//counter that acts as id for items
-        		String print;												//to print
-        		String bidderName;
         		
-        		Scanner reader = new Scanner(System.in);		//initialize the scanner
         	    System.out.println("Enter a name: ");
-        	    auct.setOwnerName(reader.nextLine());			//set owner name
+        	    auct.setOwnerName(scan.nextLine());			//set owner name
         	    System.out.println("Enter the item you wish to auction: ");
-        	    auct.setItem(reader.nextLine());				//set the item name
+        	    auct.setItem(scan.nextLine());				//set the item name
         	    System.out.println("Enter the value of the item: ");
-        	    auct.setValue(reader.nextLine());				//set the value of the item
+        	    auct.setValue(scan.nextLine());				//set the value of the item
         	    System.out.println("Enter the duration the auction will be up for (in seconds): ");
         	    boolean checktime = false;
         	    while(!checktime){
         	    try {
-        	         long l = Long.parseLong(reader.nextLine());
-        	         auct.setStartTime(System.currentTimeMillis());
+        	         long l = Long.parseLong(scan.nextLine());								//convert string into long
+        	         auct.setStartTime(System.currentTimeMillis());							//get current time in system
         	         auct.setEndtime(l);		//in millis
-        	         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+        	         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");	//change format
         	         Date resultdate = new Date(auct.getEndTime());
         	         auct.setDate(sdf.format(resultdate));
         	         checktime = true;
-        	      } catch (NumberFormatException nfe) {
+        	      } catch (NumberFormatException nfe) {										//error handling for time
         	         System.out.println("Invalid input. Please try again. Duration of the auction:" );
         	         checktime = false;
         	      }
         	    }
         	    
-        	    bidderName = "No current bidder";
-        	    auct.setBidderName(bidderName);
+        	    bidderName = "No current bidder";		//set bidder to no bidder since creating
+        	    auct.setBidderName(bidderName);			
         	    
-        	    itemList = a.readList();
+        	    auctionList = a.readList();				//read the array
         	    
-        	    if(itemList.size() != 0)
+        	    if(auctionList.size() != 0)
                 {
-        	    	counter = itemList.get(itemList.size()-2).split(",");			//-2 because of blank spacing should be -1 //to get counter
+        	    	counter = auctionList.get(auctionList.size()-1).split(",");			//-2 because of blank spacing should be -1 //to get counter
                     //System.out.println("HOOOOOOOOOO " + itemList.get(itemList.size()-2));
                     //System.out.println(counter[1]);			
                     int id = Integer.parseInt(counter[0]);	//to get counter
@@ -113,18 +113,56 @@ static auctionator a = null;
         	    	a.createAuction(print);
             	}
         	else if(choice.equals("2")){
-        			ArrayList<String> auctionList = new ArrayList<String>();
+        			
+        			String[] selectedAuction = null;
+        			String[] splitter = null;
+        			String[] newBid;
+        			int select = 0;
+        			int selectedID = 0;
+        			int bid = 0;
+        			int price;
+        			
+        		
         			auctionList = a.readList(); 	//get the arraylist containing auctions
         			System.out.println("Here is the list of the current auctions:");
-        			for(int i = 0; i < auctionList.size(); i++){
+        			for(int i = 0; i < auctionList.size(); i++){		//first loop to print out all the auctions in the array
         				System.out.println("-------------------");
         				System.out.println(auctionList.get(i));
         			}
         			
-        			int select;
+        			System.out.println("Please enter your name: ");
+        			bidderName = scan.nextLine();
+        			System.out.println("Key in the ID of the item you wish to make a bid on: ");
+        			select = Integer.parseInt(scan.nextLine());
+        			System.out.println("You have chosen to bid for ID number: " + select);
+        			
+        			for(int i = 0; i < auctionList.size(); i++){		//second loop to get the selected auction
+        				selectedAuction = auctionList.get(i).split(",");	//to remove the ","
+        				selectedID = Integer.parseInt(selectedAuction[0]);	//to get the id of the auction in the array
+        			if(select == selectedID){							//once the correct auction is selected
+        				System.out.println("The current bid for the auction item" + " '" + selectedAuction[2] + "'" + " is : " + selectedAuction[3]);			//display the current bid
+        				splitter = (selectedAuction[3].split("\\$"));	//split from the $ sign to get the actual price
+        				price = Integer.parseInt(splitter[1]);							//set the price with the actual value
+        				System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
+        				bid = scan.nextInt();							//scan the new bid
+        				boolean checkbid = false;
+        				 while(!checkbid){
+        		        	    if (price < bid){
+        		        	    	System.out.println("Your bid has been accepted! Good luck!");
+        		        	    	checkbid = true;
+        		        	    	
+        		        	    }
+        		        	    else{
+        		        	    	System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
+        		        	    	bid = scan.nextInt();
+        		        	    	checkbid = false;
+        		        	    }
+        		         }
+        			}
         		}
         	}
 
+           }
         }
         catch (MalformedURLException murle) {
             System.out.println();
