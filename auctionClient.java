@@ -98,14 +98,14 @@ static String bidderName;
                     //System.out.println(counter[1]);			
                     int id = Integer.parseInt(counter[0]);	//to get counter
                     id++;									//increment counter by 1
-                    print = (id+ "," + auct.getOwnerName()+","+auct.getItemName()+","+ "$"+auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//add into the array
+                    print = (id+ "," + auct.getOwnerName()+","+auct.getItemName()+"," +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//add into the array
                     //System.out.println("new item list " + print);
                     System.out.println("*************Auction created!*************");
                 }
         		 else
                  {
         			 //System.out.println("ITEMLIST " +itemList.size());
-                     print = (1+","+auct.getOwnerName()+","+auct.getItemName()+","+ "$" +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//first item id always set at 1
+                     print = (1+","+auct.getOwnerName()+","+auct.getItemName()+"," +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//first item id always set at 1
                      System.out.println("*************Auction created!*************");
                  }
         	    //System.out.println("ITEMLIST2 " +itemList.size());
@@ -113,17 +113,41 @@ static String bidderName;
         	    	a.createAuction(print);
             	}
         	else if(choice.equals("2")){
-        			
+        		ArrayList<String> cc = new ArrayList<String>();
+                ArrayList<String> bidlist = new ArrayList<String>();
+                ArrayList<String> rpbid = new ArrayList<String>();
         			String[] selectedAuction = null;
         			String[] splitter = null;
+        			String[] nobid = null;
         			String newBid;
         			int select = 0;
         			int selectedID = 0;
         			int bid = 0;
         			int price;
         			
+        			bidlist = a.readList2();
+        			
+        			if(bidlist.size()==0)
+        		    {
+        				bidlist= a.readList();
+        		        
+        		    }
+        		    else{
+        		    	rpbid = a.readList();
+        		    	for(int i=0; i < bidlist.size(); i++){
+        		    		nobid = bidlist.get(i).split(",");
+        		    		if(!nobid[5].equals("No current bidder is winning")){
+        		    			rpbid.set(i, bidlist.get(i));
+        		    		}
+        		    	}
+        		    	bidlist = rpbid;
+        		    	cc = new ArrayList<String>(rpbid);
+        		    }
+        			if(bidlist.size() == 0 ){
+        				System.out.println("There are no auctions available");
+        			}
         		
-        			auctionList = a.readList(); 	//get the arraylist containing auctions
+        			auctionList = bidlist; 	//get the arraylist containing auctions
         			System.out.println("Here is the list of the current auctions:");
         			for(int i = 0; i < auctionList.size(); i++){		//first loop to print out all the auctions in the array
         				System.out.println("-------------------");
@@ -142,12 +166,13 @@ static String bidderName;
         				selectedID = Integer.parseInt(selectedAuction[0]);	//to get the id of the auction in the array
         			if(select == selectedID){							//once the correct auction is selected
         				System.out.println("The current bid for the auction item" + " '" + selectedAuction[2] + "'" + " is : " + selectedAuction[3]);			//display the current bid
-        				splitter = (selectedAuction[3].split("\\$"));	//split from the $ sign to get the actual price
-        				price = Integer.parseInt(splitter[1]);							//set the price with the actual value
+        				//splitter = (selectedAuction[3].split("\\$"));	//split from the $ sign to get the actual price
+        				//price = Integer.parseInt(splitter[1]);							//set the price with the actual value
+        				price = Integer.parseInt(selectedAuction[3]);
         				System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
         				bid = scan.nextInt();							//scan the new bid
         				
-        				boolean checkbid = false;
+        			/*	boolean checkbid = false;
         				 while(!checkbid){
         		        	    if (price < bid){
         		        	    	System.out.println("Your bid has been accepted! Good luck!");
@@ -163,11 +188,37 @@ static String bidderName;
         		        	    	checkbid = false;
         		        	    }
         		         }
+        				 */
+        				
+        				while(bid <= price)
+                        {
+                        System.out.println("Please a value higher than "+ bid +": ");
+                        bid = scan.nextInt();
+                        }
+        				System.out.println("Your bid has been accepted! Good luck!");
+        				newBid = (selectedAuction[0] + "," + selectedAuction[1] + "," + selectedAuction[2] + "," + bid + "," + selectedAuction[4] + "," + auct.getBidderName() + " is winning.");
+	        	    	auctionList.set(i, newBid);
+	        	    	System.out.println(auctionList.get(i));
+	        	    	System.out.println("AAAAAAAA" + cc.size());
+	        	    	System.out.println("aaaaa" + i );
+	        	    	if(a.newBidding(auctionList , i, cc))
+	                    {
+	                     System.out.println("Bid made, Thank you for bidding");
+	                    }
+	                    else
+	                    {
+	                     System.out.println("Bid is either lower or equal to the current bid");
+	                    }
         			}
         		}
-        			a.newBidding(auctionList);
+        			//System.out.println(auctionList.size());
+        			//a.newBidding(auctionList);
         	}
-
+        	/*for(int i = 0; i < auctionList.size(); i++){
+        		if (System.currentTimeMillis() - auct.getEndTime() == 1){
+        			System.out.println("FUCK");
+        		}
+        	}*/
            }
         }
         catch (MalformedURLException murle) {

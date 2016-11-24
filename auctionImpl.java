@@ -107,7 +107,7 @@ public ArrayList<String> readList() throws IOException {
 		itemList1.removeAll(Collections.singleton(""));
 		return itemList1;  
 }
-
+@Override
 public ArrayList<String> readList2() throws IOException {
 	ArrayList<String> itemList1 = new ArrayList<String>();
 	File file = new File("auctionlist2.txt");
@@ -163,29 +163,109 @@ public void synchronizeAuction(String auctItem) throws IOException {
 
 		 }
 
-public void newBidding(ArrayList<String> auctionList) throws RemoteException, IOException {
-	String nbid = "";
-	for(int i = 0; i < auctionList.size(); i++){
-		if(nbid.equals("")){
-			nbid = auctionList.get(i) + System.getProperty("line.separator");
-		}
-		else {
-			nbid = nbid + System.getProperty("line.separator") + auctionList.get(i) + System.getProperty("line.separator");
-		}
-	}
-	 PrintWriter out = null;
-	  try {
-	      out = new PrintWriter(new BufferedWriter(new FileWriter("auctionlist.txt", false)));
-	      out.println(nbid);
-	  }catch (IOException e) {
-	      System.err.println(e);
-	  }finally{
-	      if(out != null){
-	          out.close();
-	      }
-	 } 
-	 System.out.println("New bid success!");
+public boolean checkValue(String bid, String prevBid) throws RemoteException, FileNotFoundException, IOException {
+    
+    int prevValue;
+    int newValue;
+    String[] prev = new String[6];
+    String[] newBid = new String[6];
+    prev = prevBid.split(",");
+    newBid = bid.split(",");
+    prevValue = Integer.parseInt(prev[3]);
+    newValue = Integer.parseInt(newBid[3]);
+    System.out.println(prevValue + " VS " + newValue);
+    if(prevValue >= newValue)
+    {
+        return false;
+    }
+    
+return true;     
 
+
+
+}
+@Override
+public boolean newBidding(ArrayList<String> auctionList, int choice, ArrayList<String>rpbid) throws RemoteException, IOException {
+	String newbid="";
+    ArrayList<String> updatebid = new ArrayList<String>();
+    String [] nobid;
+    updatebid = readList2();
+    if(updatebid.size() ==0)
+    {
+        updatebid = readList();
+    }
+    else
+    {
+        rpbid = readList();
+        for(int i=0; i<updatebid.size();i++)
+        {
+            nobid = updatebid.get(i).split(",");
+            if(!nobid[5].equals("No current bidder is winning"))
+            {
+                rpbid.set(i,updatebid.get(i));
+            }
+            
+        }
+    }
+    ArrayList<String> cc = new ArrayList<String>(rpbid);
+    
+    //System.out.println(updatebid.size());
+    //choice = choice -1;
+    System.out.println(cc.get(choice));
+    System.out.println(auctionList.get(choice));
+    
+    boolean chk = checkValue(auctionList.get(choice), cc.get(choice));
+    System.out.println("THIS IS THE CHECK RESULT : " + chk);
+    if(chk)
+    {
+        cc.set(choice,auctionList.get(choice));
+        for(int i =0; i <cc.size(); i++)
+        {
+            
+            if(newbid.equals(""))
+            {
+                newbid = cc.get(i) + System.getProperty("line.separator");
+            }
+            else
+            {
+                newbid = newbid + System.getProperty("line.separator") + cc.get(i)+System.getProperty("line.separator");
+            }
+        }
+        
+        ArrayList<String> morebid = new ArrayList<String>();
+        
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(new BufferedWriter(new FileWriter("auctionlist2.txt", false)));
+            out.println(newbid);
+        }catch (IOException e) {
+            System.err.println(e);
+        }finally{
+            if(out != null){
+                out.close();
+            }
+        }
+        morebid = readList();
+        updatebid = readList2();
+        System.out.println("MOREBID SIZE "+ morebid.size());
+        System.out.println("UPDATEBID SIZE " + updatebid.size());
+        if(morebid.size()!=updatebid.size())
+        {
+            int diff = morebid.size() - updatebid.size();
+            for(int i = diff; i>0 ; i--)
+            {
+                System.out.println(morebid.get(morebid.size()-i));
+                synchronizeAuction(morebid.get(morebid.size()-i));
+            } 
+	  }
+	  
+	}
+	else
+	{
+		return false;
+	}
+	 System.out.println("New bid success!");
+	 return true;
 	
 }
 }
