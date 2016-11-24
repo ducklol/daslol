@@ -116,7 +116,7 @@ static String bidderName;
         			
         			String[] selectedAuction = null;
         			String[] splitter = null;
-        			String[] newBid;
+        			String newBid;
         			int select = 0;
         			int selectedID = 0;
         			int bid = 0;
@@ -132,6 +132,7 @@ static String bidderName;
         			
         			System.out.println("Please enter your name: ");
         			bidderName = scan.nextLine();
+        			auct.setBidderName(bidderName);
         			System.out.println("Key in the ID of the item you wish to make a bid on: ");
         			select = Integer.parseInt(scan.nextLine());
         			System.out.println("You have chosen to bid for ID number: " + select);
@@ -145,12 +146,16 @@ static String bidderName;
         				price = Integer.parseInt(splitter[1]);							//set the price with the actual value
         				System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
         				bid = scan.nextInt();							//scan the new bid
+        				
         				boolean checkbid = false;
         				 while(!checkbid){
         		        	    if (price < bid){
         		        	    	System.out.println("Your bid has been accepted! Good luck!");
-        		        	    	checkbid = true;
         		        	    	
+        		        	    	newBid = (selectedAuction[0] + "," + selectedAuction[1] + "," + selectedAuction[2] + "," + "$" + bid + "," + selectedAuction[4] + "," + auct.getBidderName() + " is winning.");
+        		        	    	auctionList.set(i, newBid);
+        		        	    	System.out.println(auctionList.get(i));
+        		        	    	checkbid = true;
         		        	    }
         		        	    else{
         		        	    	System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
@@ -160,6 +165,7 @@ static String bidderName;
         		         }
         			}
         		}
+        			a.newBidding(auctionList);
         	}
 
            }

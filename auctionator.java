@@ -9,4 +9,5 @@ public interface auctionator extends java.rmi.Remote {
 	ArrayList<String> readList() throws IOException; //read array list
 	public void registerForCallback(clientServant callbackobj) throws java.rmi.RemoteException;
 	//public void ping() throws java.rmi.RemoteException;
+	void newBidding(ArrayList<String> auctionList) throws java.rmi.RemoteException, IOException;
 }

@@ -91,7 +91,26 @@ public static void create() throws IOException{
 @SuppressWarnings("resource")
 public ArrayList<String> readList() throws IOException {
 	ArrayList<String> itemList1 = new ArrayList<String>();
-	File file = new File("name.txt");
+	File file = new File("auctionlist.txt");
+    file.createNewFile();					//create a file if it doesnt exist
+			FileReader fileReader = new FileReader(file);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+    	StringBuffer stringBuffer = new StringBuffer();
+    	String line;
+    	
+		while ((line = bufferedReader.readLine()) != null) {
+		    stringBuffer.append(line);
+		    stringBuffer.append("\n");
+		    itemList1.add(line);
+		//itemList.get(0); //test the array
+		}
+		itemList1.removeAll(Collections.singleton(""));
+		return itemList1;  
+}
+
+public ArrayList<String> readList2() throws IOException {
+	ArrayList<String> itemList1 = new ArrayList<String>();
+	File file = new File("auctionlist2.txt");
     file.createNewFile();					//create a file if it doesnt exist
 			FileReader fileReader = new FileReader(file);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -113,7 +132,7 @@ public void createAuction(String auctItem) throws IOException {
 	
     		  PrintWriter out = null;
     		  try {
-    		      out = new PrintWriter(new BufferedWriter(new FileWriter("name.txt", true)));
+    		      out = new PrintWriter(new BufferedWriter(new FileWriter("auctionlist.txt", true)));
     		      out.println(auctItem + System.getProperty("line.separator"));
     		  }catch (IOException e) {
     		      System.err.println(e);
@@ -125,5 +144,49 @@ public void createAuction(String auctItem) throws IOException {
     		 System.out.println("Auction created");
 
     		 }
+
+public void synchronizeAuction(String auctItem) throws IOException {
+	  // TODO Auto-generated method stub
+
+		  PrintWriter out = null;
+		  try {
+		      out = new PrintWriter(new BufferedWriter(new FileWriter("auctionlist2.txt", true)));
+		      out.println(auctItem + System.getProperty("line.separator"));
+		  }catch (IOException e) {
+		      System.err.println(e);
+		  }finally{
+		      if(out != null){
+		          out.close();
+		      }
+		 } 
+		 System.out.println("Auctions synchronized");
+
+		 }
+
+public void newBidding(ArrayList<String> auctionList) throws RemoteException, IOException {
+	String nbid = "";
+	for(int i = 0; i < auctionList.size(); i++){
+		if(nbid.equals("")){
+			nbid = auctionList.get(i) + System.getProperty("line.separator");
+		}
+		else {
+			nbid = nbid + System.getProperty("line.separator") + auctionList.get(i) + System.getProperty("line.separator");
+		}
+	}
+	 PrintWriter out = null;
+	  try {
+	      out = new PrintWriter(new BufferedWriter(new FileWriter("auctionlist.txt", false)));
+	      out.println(nbid);
+	  }catch (IOException e) {
+	      System.err.println(e);
+	  }finally{
+	      if(out != null){
+	          out.close();
+	      }
+	 } 
+	 System.out.println("New bid success!");
+
+	
+}
 }
 
