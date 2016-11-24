@@ -88,6 +88,7 @@ public static void create() throws IOException{
     		 }
 		*/
 	
+@SuppressWarnings("resource")
 public ArrayList<String> readList() throws IOException {
 	ArrayList<String> itemList1 = new ArrayList<String>();
 	File file = new File("name.txt");

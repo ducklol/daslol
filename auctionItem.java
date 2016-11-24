@@ -10,18 +10,19 @@ public class auctionItem {
 	String bidderName;
 	int initialValue;
 	int bid;
-	long starttime;
-	long endtime;
+	long endTime;
+	long startTime;
+	String date;
 	
 	public auctionItem(){
 		
 	}
-	public auctionItem(String id, String itemName, String ownerName, int bid, long endtime){
+	public auctionItem(String id, String itemName, String ownerName, int bid, long endTime){
 		this.id = id;
 		this.itemName = itemName;
 		this.ownerName = ownerName;
 		this.bid = bid;
-		this.endtime = endtime;
+		this.endTime = endTime;
 	}
 	public void setID(String id){
 		this.id = id;
@@ -69,14 +70,19 @@ public class auctionItem {
 			System.out.println("Invalid Value");
 		}
 	}
-	public void setStartTime(long newstime){
-		starttime = newstime;
+	public long getEndTime(){
+		return endTime;
 	}
-	public void setDate(long newTime){
-		endtime = newTime + starttime;
-
+	public void setEndtime(long endTime){			//in milliseconds
+		this.endTime = endTime + startTime;
 	}
-	public void setClosetime(long closeTime){
-		endtime = closeTime;
+	public void setStartTime(long startTime){
+		this.startTime = startTime;
+	}
+	public void setDate(String date){
+		this.date = date;
+	}
+	public String getDate(){
+		return date;
 	}
 }

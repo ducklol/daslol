@@ -24,6 +24,7 @@ static auctionator a = null;
       super();
    }
 
+	@SuppressWarnings("resource")
 	public static void main(String args[]) throws IOException{
         String reg_host = "localhost";
        int reg_port = 1099;
@@ -44,49 +45,84 @@ static auctionator a = null;
         	auctionator a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
         	
         while(!quit){
-        	System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) List Auction Items\n4) Exit\nInput choice: ");
+        	System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) Exit\nInput choice: ");
         	choice = scan.nextLine();
         	while(!choice.equals("1") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4"))
             {
-        		System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) List Auction Items\n4) Exit\nInput choice: ");
+        		System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) Exit\nInput choice: ");
         		choice = scan.nextLine();
             }
         	if (choice.equals("1")){
         		//auctionImpl.create();
         		auctionItem auct = new auctionItem();
         		
-        		ArrayList<String> itemList = new ArrayList<String>();
-        		ArrayList<String> newitemList = new ArrayList<String>();
-        		String[] lastoccur = new String[3];
+        		ArrayList<String> itemList = new ArrayList<String>();		//arraylist to store item
+        		//ArrayList<String> printitemList = new ArrayList<String>();	//list that gets printed out
+        		String[] counter;							//counter that acts as id for items
+        		String print;												//to print
+        		String bidderName;
         		
-        		Scanner reader = new Scanner(System.in);
+        		Scanner reader = new Scanner(System.in);		//initialize the scanner
         	    System.out.println("Enter a name: ");
-        	    auct.setOwnerName(reader.nextLine());
+        	    auct.setOwnerName(reader.nextLine());			//set owner name
         	    System.out.println("Enter the item you wish to auction: ");
-        	    auct.setItem(reader.nextLine());
+        	    auct.setItem(reader.nextLine());				//set the item name
         	    System.out.println("Enter the value of the item: ");
-        	    auct.setValue(reader.nextLine());
+        	    auct.setValue(reader.nextLine());				//set the value of the item
+        	    System.out.println("Enter the duration the auction will be up for (in seconds): ");
+        	    boolean checktime = false;
+        	    while(!checktime){
+        	    try {
+        	         long l = Long.parseLong(reader.nextLine());
+        	         auct.setStartTime(System.currentTimeMillis());
+        	         auct.setEndtime(l);		//in millis
+        	         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+        	         Date resultdate = new Date(auct.getEndTime());
+        	         auct.setDate(sdf.format(resultdate));
+        	         checktime = true;
+        	      } catch (NumberFormatException nfe) {
+        	         System.out.println("Invalid input. Please try again. Duration of the auction:" );
+        	         checktime = false;
+        	      }
+        	    }
+        	    
+        	    bidderName = "No current bidder";
+        	    auct.setBidderName(bidderName);
         	    
         	    itemList = a.readList();
         	    
         	    if(itemList.size() != 0)
                 {
-        	    	lastoccur = itemList.get(itemList.size()-2).split(",");			//-2 because of blank spacing should be -1
-                    System.out.println("HOOOOOOOOOO " + itemList.get(itemList.size()-2));
-                    System.out.println(lastoccur[1]);			//to get counter
-                    int lastocc = Integer.parseInt(lastoccur[0]);
-                    lastocc++;
-                    newitemList.add(lastocc+ "," + auct.getOwnerName()+","+auct.getItemName()+","+auct.getValue());
-                    System.out.println("new item list " + newitemList.get(0));
+        	    	counter = itemList.get(itemList.size()-2).split(",");			//-2 because of blank spacing should be -1 //to get counter
+                    //System.out.println("HOOOOOOOOOO " + itemList.get(itemList.size()-2));
+                    //System.out.println(counter[1]);			
+                    int id = Integer.parseInt(counter[0]);	//to get counter
+                    id++;									//increment counter by 1
+                    print = (id+ "," + auct.getOwnerName()+","+auct.getItemName()+","+ "$"+auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//add into the array
+                    //System.out.println("new item list " + print);
+                    System.out.println("*************Auction created!*************");
                 }
         		 else
                  {
-        			 System.out.println("ITEMLIST " +itemList.size());
-                     newitemList.add(1+","+auct.getOwnerName()+","+auct.getItemName()+","+auct.getValue());
+        			 //System.out.println("ITEMLIST " +itemList.size());
+                     print = (1+","+auct.getOwnerName()+","+auct.getItemName()+","+ "$" +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//first item id always set at 1
+                     System.out.println("*************Auction created!*************");
                  }
-        	    System.out.println("ITEMLIST2 " +itemList.size());
-        	    	a.createAuction(newitemList.get(0));
+        	    //System.out.println("ITEMLIST2 " +itemList.size());
+        	    //System.out.println("ITEMLIST3 " +printitemList.size());
+        	    	a.createAuction(print);
             	}
+        	else if(choice.equals("2")){
+        			ArrayList<String> auctionList = new ArrayList<String>();
+        			auctionList = a.readList(); 	//get the arraylist containing auctions
+        			System.out.println("Here is the list of the current auctions:");
+        			for(int i = 0; i < auctionList.size(); i++){
+        				System.out.println("-------------------");
+        				System.out.println(auctionList.get(i));
+        			}
+        			
+        			int select;
+        		}
         	}
 
         }
