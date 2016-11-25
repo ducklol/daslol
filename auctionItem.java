@@ -1,5 +1,6 @@
 //Luqman Hakim
-
+//2228135B
+//15AGC045H
 public class auctionItem {
 	
 	String id;

@@ -1,5 +1,6 @@
 //Luqman Hakim
-
+//2228135B
+//15AGC045H
 
 import java.rmi.Naming;	//Import naming classes to bind to rmiregistry
 import java.rmi.server.UnicastRemoteObject;

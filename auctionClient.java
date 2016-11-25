@@ -1,4 +1,6 @@
 //Luqman Hakim
+//2228135B
+//15AGC045H
 import java.util.*;
 import java.rmi.*;
 import java.text.*;
@@ -11,7 +13,7 @@ import java.io.IOException;
 
 public class auctionClient {
 static Scanner scan = new Scanner(System.in);
-static auctionator a = null;
+static auctionator a;
 
 static auctionItem auct = new auctionItem();			//auctionImpl.create();
 static ArrayList<String> auctionList = new ArrayList<String>();		//arraylist to store item
@@ -19,15 +21,17 @@ static String[] counter;							//counter that acts as id for items
 static String print;												//to print
 static String bidderName;
 
+static String reg_host = "localhost";
+static int reg_port = 1099;
+static String choice;
+static Boolean quit = false;
+
  public auctionClient() throws RemoteException {
       super();
    }
 
 	public static void main(String args[]) throws IOException{
-        String reg_host = "localhost";
-       int reg_port = 1099;
-       String choice;
-       Boolean quit = false;
+        
         
         if(args.length!= 0){
           reg_host = args[0];
@@ -39,8 +43,33 @@ static String bidderName;
               }
 
          }
+        Timer t = new Timer();
+        TimerTask timer2 = new TimerTask(){
+             @Override
+                public void run()
+                {
+                    try{
+                      
+                       
+                     try {
+					a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					} catch (NotBoundException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					}
+                    }catch(RemoteException e)
+                    {
+                        System.out.println("Server is Offline");
+                        System.out.println("Trying to reconnect");
+                    }
+                }
+            
+        };t.schedule(timer2, 0 , 5000);
         try{
-        	auctionator a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
+        	a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
         	Timer timer = new Timer ();
 		      TimerTask hourly = new TimerTask () {
 		     @Override
@@ -59,11 +88,11 @@ static String bidderName;
 					
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
                catch(ParseException pe)
                {
-                   pe.printStackTrace();
+                  // pe.printStackTrace();
                }
 			
           }
@@ -202,27 +231,32 @@ static String bidderName;
         			}
         		}
         	}
+        	else if(choice.equals("3")) {		//quit
+        		timer.cancel();
+        		break;
+        	}
+        	
            }
         }
         catch (MalformedURLException murle) {
-            System.out.println();
-            System.out.println("MalformedURLException");
-            System.out.println(murle);
+            //System.out.println();
+            //System.out.println("MalformedURLException");
+            //System.out.println(murle);
         }
         catch (RemoteException re) {
-            System.out.println();
-            System.out.println("RemoteException");
-            System.out.println(re);
+            //System.out.println();
+            //System.out.println("RemoteException");
+            //System.out.println(re);
         }
         catch (NotBoundException nbe) {
-            System.out.println();
-            System.out.println("NotBoundException");
-            System.out.println(nbe);
+            //System.out.println();
+            //System.out.println("NotBoundException");
+            //System.out.println(nbe);
         }
         catch (java.lang.ArithmeticException ae) {
-            System.out.println();
-            System.out.println("java.lang.ArithmeticException");
-            System.out.println(ae);
+            //System.out.println();
+            //System.out.println("java.lang.ArithmeticException");
+            //System.out.println(ae);
         }
 	}
 }
