@@ -2,6 +2,7 @@
 //interface
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.*;
 
 public interface auctionator extends java.rmi.Remote {	
@@ -14,4 +15,5 @@ public interface auctionator extends java.rmi.Remote {
 	boolean newBidding(ArrayList<String> auctionList, int choice, ArrayList<String> rpbid)
 			throws RemoteException, IOException;
 	ArrayList<String> readList2() throws RemoteException, IOException;
+	String callbak(Date date) throws RemoteException, ParseException;
 }

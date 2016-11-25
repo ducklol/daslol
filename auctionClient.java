@@ -51,6 +51,34 @@ static String bidderName;
          }
         try{
         	auctionator a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
+        	Timer timer = new Timer ();
+		      TimerTask hourlyTask = new TimerTask () {
+		     @Override
+		     public void run () {
+                  
+				try {
+                  Date date = new Date();
+                  if(!a.callbak(date).equals(""))
+                  {
+                      
+                      System.out.println(a.callbak(date));
+                  }
+                  else
+                  {
+                      //System.out.println("A");
+                  }
+					
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+               catch(ParseException pe)
+               {
+                   pe.printStackTrace();
+               }
+			
+          }
+		      };timer.schedule(hourlyTask, 0,  600);
         	
         while(!quit){
         	System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) Exit\nInput choice: ");
@@ -75,10 +103,11 @@ static String bidderName;
         	    try {
         	         long l = Long.parseLong(scan.nextLine());								//convert string into long
         	         auct.setStartTime(System.currentTimeMillis());							//get current time in system
-        	         auct.setEndtime(l);		//in millis
+        	         auct.setEndtime(l * 1000);		//in millis
         	         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");	//change format
         	         Date resultdate = new Date(auct.getEndTime());
         	         auct.setDate(sdf.format(resultdate));
+        	         System.out.println(auct.getDate());
         	         checktime = true;
         	      } catch (NumberFormatException nfe) {										//error handling for time
         	         System.out.println("Invalid input. Please try again. Duration of the auction:" );

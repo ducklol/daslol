@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 public class auctionImpl implements auctionator {
@@ -267,6 +269,49 @@ public boolean newBidding(ArrayList<String> auctionList, int choice, ArrayList<S
 	 System.out.println("New bid success!");
 	 return true;
 	
+}
+@Override
+public String callbak(Date date) throws RemoteException, ParseException{
+    
+        ArrayList<String> endbid = new ArrayList<String>();
+        String dt="";
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+        long mili = sdf.parse(sdf.format(date)).getTime();
+        
+        try {
+			endbid = readList2();
+            
+            String [] endDate;
+            
+            for(int i = 0 ; i < endbid.size(); i++)
+            {
+                endDate = endbid.get(i).split(",");
+                String dt2 = sdf.format(date);
+                //System.out.println(mili2);
+                System.out.println(dt2);
+                if(dt2.equals(endDate[4]))
+                {
+                    dt = "********** Congrats! Bid Ended for " + endbid.get(i) + " **********";
+                    return dt;
+                }
+                else
+                {
+                    
+                }
+            }
+            
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+  return dt;
+     }
+ public String mesg(String mes)
+{
+	return mes;
 }
 }
 
