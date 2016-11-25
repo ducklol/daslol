@@ -1,10 +1,8 @@
 //Luqman Hakim
 
-import java.util.*;
-import java.rmi.*;
+
 import java.rmi.Naming;	//Import naming classes to bind to rmiregistry
 import java.rmi.server.UnicastRemoteObject;
-import java.io.*;
 import java.rmi.registry.LocateRegistry;
 
 

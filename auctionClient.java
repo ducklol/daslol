@@ -1,29 +1,20 @@
 //Luqman Hakim
-import java.io.*;
 import java.util.*;
 import java.rmi.*;
 import java.text.*;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.*;
 import java.rmi.RemoteException;	//Import the RemoteException class so you can catch it
 import java.net.MalformedURLException;	//Import the MalformedURLException class so you can catch it
 import java.rmi.NotBoundException;	//Import the NotBoundException class so you can catch it
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 
 
-public class auctionClient implements clientServant, Runnable{
-//static auctionServant aS = null;
+public class auctionClient {
 static Scanner scan = new Scanner(System.in);
-static clientServant cS = null;
 static auctionator a = null;
 
 static auctionItem auct = new auctionItem();			//auctionImpl.create();
 static ArrayList<String> auctionList = new ArrayList<String>();		//arraylist to store item
-//ArrayList<String> printitemList = new ArrayList<String>();	//list that gets printed out
 static String[] counter;							//counter that acts as id for items
 static String print;												//to print
 static String bidderName;
@@ -32,7 +23,6 @@ static String bidderName;
       super();
    }
 
-	@SuppressWarnings("resource")
 	public static void main(String args[]) throws IOException{
         String reg_host = "localhost";
        int reg_port = 1099;
@@ -52,7 +42,7 @@ static String bidderName;
         try{
         	auctionator a = (auctionator)Naming.lookup("rmi://" + reg_host + ":" + reg_port + "/AuctionService");
         	Timer timer = new Timer ();
-		      TimerTask hourlyTask = new TimerTask () {
+		      TimerTask hourly = new TimerTask () {
 		     @Override
 		     public void run () {
                   
@@ -65,7 +55,6 @@ static String bidderName;
                   }
                   else
                   {
-                      //System.out.println("A");
                   }
 					
 				} catch (RemoteException e) {
@@ -78,7 +67,7 @@ static String bidderName;
                }
 			
           }
-		      };timer.schedule(hourlyTask, 0,  600);
+		      };timer.schedule(hourly, 0,  600);
         	
         while(!quit){
         	System.out.println("Choose option\n1) Create Auction Item\n2) Bid Item\n3) Exit\nInput choice: ");
@@ -122,31 +111,25 @@ static String bidderName;
         	    
         	    if(auctionList.size() != 0)
                 {
-        	    	counter = auctionList.get(auctionList.size()-1).split(",");			//-2 because of blank spacing should be -1 //to get counter
-                    //System.out.println("HOOOOOOOOOO " + itemList.get(itemList.size()-2));
-                    //System.out.println(counter[1]);			
+        	    	counter = auctionList.get(auctionList.size()-1).split(",");			//-2 because of blank spacing should be -1 //to get counter		
                     int id = Integer.parseInt(counter[0]);	//to get counter
                     id++;									//increment counter by 1
                     print = (id+ "," + auct.getOwnerName()+","+auct.getItemName()+"," +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//add into the array
-                    //System.out.println("new item list " + print);
+
                     System.out.println("*************Auction created!*************");
                 }
         		 else
                  {
-        			 //System.out.println("ITEMLIST " +itemList.size());
                      print = (1+","+auct.getOwnerName()+","+auct.getItemName()+"," +auct.getValue() + "," +auct.getDate() + "," +auct.getBidderName() + " is winning.");	//first item id always set at 1
                      System.out.println("*************Auction created!*************");
                  }
-        	    //System.out.println("ITEMLIST2 " +itemList.size());
-        	    //System.out.println("ITEMLIST3 " +printitemList.size());
         	    	a.createAuction(print);
             	}
         	else if(choice.equals("2")){
-        		ArrayList<String> cc = new ArrayList<String>();
+        		ArrayList<String> checker = new ArrayList<String>();
                 ArrayList<String> bidlist = new ArrayList<String>();
-                ArrayList<String> rpbid = new ArrayList<String>();
+                ArrayList<String> arbid = new ArrayList<String>();
         			String[] selectedAuction = null;
-        			String[] splitter = null;
         			String[] nobid = null;
         			String newBid;
         			int select = 0;
@@ -162,15 +145,15 @@ static String bidderName;
         		        
         		    }
         		    else{
-        		    	rpbid = a.readList();
+        		    	arbid = a.readList();
         		    	for(int i=0; i < bidlist.size(); i++){
         		    		nobid = bidlist.get(i).split(",");
         		    		if(!nobid[5].equals("No current bidder is winning")){
-        		    			rpbid.set(i, bidlist.get(i));
+        		    			arbid.set(i, bidlist.get(i));
         		    		}
         		    	}
-        		    	bidlist = rpbid;
-        		    	cc = new ArrayList<String>(rpbid);
+        		    	bidlist = arbid;
+        		    	checker = new ArrayList<String>(arbid);
         		    }
         			if(bidlist.size() == 0 ){
         				System.out.println("There are no auctions available");
@@ -195,30 +178,10 @@ static String bidderName;
         				selectedID = Integer.parseInt(selectedAuction[0]);	//to get the id of the auction in the array
         			if(select == selectedID){							//once the correct auction is selected
         				System.out.println("The current bid for the auction item" + " '" + selectedAuction[2] + "'" + " is : " + selectedAuction[3]);			//display the current bid
-        				//splitter = (selectedAuction[3].split("\\$"));	//split from the $ sign to get the actual price
-        				//price = Integer.parseInt(splitter[1]);							//set the price with the actual value
-        				price = Integer.parseInt(selectedAuction[3]);
+        											
+        				price = Integer.parseInt(selectedAuction[3]);	//set the price with the actual value
         				System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
         				bid = scan.nextInt();							//scan the new bid
-        				
-        			/*	boolean checkbid = false;
-        				 while(!checkbid){
-        		        	    if (price < bid){
-        		        	    	System.out.println("Your bid has been accepted! Good luck!");
-        		        	    	
-        		        	    	newBid = (selectedAuction[0] + "," + selectedAuction[1] + "," + selectedAuction[2] + "," + "$" + bid + "," + selectedAuction[4] + "," + auct.getBidderName() + " is winning.");
-        		        	    	auctionList.set(i, newBid);
-        		        	    	System.out.println(auctionList.get(i));
-        		        	    	checkbid = true;
-        		        	    }
-        		        	    else{
-        		        	    	System.out.println("Please place a bid higher than the current, " + selectedAuction[3]);
-        		        	    	bid = scan.nextInt();
-        		        	    	checkbid = false;
-        		        	    }
-        		         }
-        				 */
-        				
         				while(bid <= price)
                         {
                         System.out.println("Please a value higher than "+ bid +": ");
@@ -228,9 +191,7 @@ static String bidderName;
         				newBid = (selectedAuction[0] + "," + selectedAuction[1] + "," + selectedAuction[2] + "," + bid + "," + selectedAuction[4] + "," + auct.getBidderName() + " is winning.");
 	        	    	auctionList.set(i, newBid);
 	        	    	System.out.println(auctionList.get(i));
-	        	    	System.out.println("AAAAAAAA" + cc.size());
-	        	    	System.out.println("aaaaa" + i );
-	        	    	if(a.newBidding(auctionList , i, cc))
+	        	    	if(a.newBidding(auctionList , i, checker))
 	                    {
 	                     System.out.println("Bid made, Thank you for bidding");
 	                    }
@@ -240,14 +201,7 @@ static String bidderName;
 	                    }
         			}
         		}
-        			//System.out.println(auctionList.size());
-        			//a.newBidding(auctionList);
         	}
-        	/*for(int i = 0; i < auctionList.size(); i++){
-        		if (System.currentTimeMillis() - auct.getEndTime() == 1){
-        			System.out.println("FUCK");
-        		}
-        	}*/
            }
         }
         catch (MalformedURLException murle) {
@@ -271,14 +225,4 @@ static String bidderName;
             System.out.println(ae);
         }
 	}
-	 public void run(){
-		  
-		  try{
-		    
-		  a.registerForCallback(cS);
-		  }
-		  catch(Exception e){
-
-		  }
-		}
 }

@@ -1,7 +1,5 @@
 //Luqman Hakim
 
-import java.util.*;
-import java.io.*;
 public class auctionItem {
 	
 	String id;
@@ -13,23 +11,6 @@ public class auctionItem {
 	long endTime;
 	long startTime;
 	String date;
-	
-	public auctionItem(){
-		
-	}
-	public auctionItem(String id, String itemName, String ownerName, int bid, long endTime){
-		this.id = id;
-		this.itemName = itemName;
-		this.ownerName = ownerName;
-		this.bid = bid;
-		this.endTime = endTime;
-	}
-	public void setID(String id){
-		this.id = id;
-	}
-	public String getID() {
-		return id;
-	}
 	
 	public void setOwnerName(String newOwnerName){
 		this.ownerName = newOwnerName;
